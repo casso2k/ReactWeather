@@ -7,7 +7,7 @@ var Main = (props) => {
       <Nav />
       <div className="container-fluid">
         <div className="row">
-          <div className="col-sm-6 col-md-4" style={{float: 'none', margin: '0 auto'}}>
+          <div className="col-sm-4 col-md-2" style={{float: 'none', margin: '0 auto'}}>
             {props.children}
           </div>
         </div>

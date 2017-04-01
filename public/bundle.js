@@ -10522,7 +10522,7 @@ var Main = function Main(props) {
         { className: 'row' },
         React.createElement(
           'div',
-          { className: 'col-sm-6 col-md-4', style: { float: 'none', margin: '0 auto' } },
+          { className: 'col-sm-4 col-md-2', style: { float: 'none', margin: '0 auto' } },
           props.children
         )
       )
@@ -10593,7 +10593,7 @@ var Weather = React.createClass({
       if (that.state.isLoading) {
         return React.createElement(
           'h3',
-          null,
+          { className: 'text-center' },
           'Fetching weather data...'
         );
       } else if (that.state.temp && that.state.location) {
@@ -10605,7 +10605,7 @@ var Weather = React.createClass({
       null,
       React.createElement(
         'h1',
-        null,
+        { className: 'text-center' },
         'Get Weather'
       ),
       React.createElement('br', null),
@@ -10777,7 +10777,7 @@ var WeatherForm = React.createClass({
         { className: 'form-group' },
         React.createElement('input', { type: 'text', className: 'form-control', ref: 'location' }),
         React.createElement('br', null),
-        React.createElement('input', { type: 'submit', className: 'btn btn-warning', style: { width: '30em' }, value: 'Get Weather' })
+        React.createElement('input', { type: 'submit', className: 'btn btn-info btn-block', value: 'Get Weather' })
       )
     );
   }
@@ -10800,7 +10800,7 @@ var WeatherMessage = function WeatherMessage(props) {
     null,
     React.createElement(
       'h2',
-      null,
+      { className: 'text-center' },
       'It\'s ',
       props.temp,
       ' degrees Celsius in ',

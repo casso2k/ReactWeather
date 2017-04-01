@@ -15,7 +15,7 @@ var WeatherForm = React.createClass({
         <div className='form-group'>
           <input type='text' className='form-control' ref='location' />
           <br />
-          <input type="submit" className='btn btn-warning' style={{width: '30em'}} value="Get Weather" />
+          <input type="submit" className='btn btn-info btn-block' value="Get Weather" />
         </div>
       </form>
     )
