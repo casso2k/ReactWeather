@@ -10419,9 +10419,13 @@ var React = __webpack_require__(5);
 
 var Examples = function Examples(props) {
   return React.createElement(
-    'h1',
+    'div',
     null,
-    'Examples Component'
+    React.createElement(
+      'h1',
+      null,
+      'Examples Component!'
+    )
   );
 };
 
@@ -10589,27 +10593,78 @@ var React = __webpack_require__(5);
 var _require = __webpack_require__(61),
     Link = _require.Link;
 
-var Nav = function Nav(props) {
-  return React.createElement(
-    'div',
-    null,
-    React.createElement(
-      Link,
-      { to: '/weather' },
-      'Get Weather'
-    ),
-    React.createElement(
-      Link,
-      { to: '/about' },
-      'About'
-    ),
-    React.createElement(
-      Link,
-      { to: '/examples' },
-      'Examples'
-    )
-  );
-};
+var Nav = React.createClass({
+  displayName: 'Nav',
+
+  getWeather: function getWeather() {
+    alert(this.refs.location.value);
+  },
+  render: function render() {
+    return React.createElement(
+      'nav',
+      { className: 'navbar navbar-default' },
+      React.createElement(
+        'div',
+        { className: 'container-fluid' },
+        React.createElement(
+          'div',
+          { className: 'navbar-header' },
+          React.createElement(
+            'a',
+            { className: 'navbar-brand' },
+            React.createElement(
+              Link,
+              { to: '/weather', style: { textDecoration: "none" } },
+              'ReactWeather'
+            )
+          )
+        ),
+        React.createElement(
+          'ul',
+          { className: 'nav navbar-nav' },
+          React.createElement(
+            'li',
+            null,
+            React.createElement(
+              Link,
+              { to: '/weather' },
+              'Get Weather'
+            )
+          ),
+          React.createElement(
+            'li',
+            null,
+            React.createElement(
+              Link,
+              { to: '/about' },
+              'About'
+            )
+          ),
+          React.createElement(
+            'li',
+            null,
+            React.createElement(
+              Link,
+              { to: '/examples' },
+              'Examples'
+            )
+          )
+        ),
+        React.createElement(
+          'div',
+          { style: { float: 'right', marginTop: '0.5em' } },
+          React.createElement('input', { type: 'text', ref: 'location' }),
+          '\xA0\xA0',
+          React.createElement(
+            'button',
+            { className: 'btn btn-warning', onClick: this.getWeather },
+            'Get Weather'
+          )
+        )
+      )
+    );
+  }
+});
 
 module.exports = Nav;
 
