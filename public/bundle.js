@@ -10417,14 +10417,44 @@ module.exports = About;
 
 var React = __webpack_require__(5);
 
+var _require = __webpack_require__(61),
+    Link = _require.Link;
+
 var Examples = function Examples(props) {
   return React.createElement(
     'div',
     null,
     React.createElement(
       'h1',
+      { className: 'text-center' },
+      'Examples'
+    ),
+    React.createElement(
+      'p',
       null,
-      'Examples Component!'
+      'Here are a few example locations to try out:'
+    ),
+    React.createElement(
+      'ol',
+      null,
+      React.createElement(
+        'li',
+        null,
+        React.createElement(
+          Link,
+          { to: '/weather?location=Toronto' },
+          'Toronto, ON'
+        )
+      ),
+      React.createElement(
+        'li',
+        null,
+        React.createElement(
+          Link,
+          { to: '/weather?location=Rio' },
+          'Rio, Brazil'
+        )
+      )
     )
   );
 };
@@ -10446,7 +10476,19 @@ var Main = function Main(props) {
     'div',
     null,
     React.createElement(Nav, null),
-    props.children
+    React.createElement(
+      'div',
+      { className: 'container-fluid' },
+      React.createElement(
+        'div',
+        { className: 'row' },
+        React.createElement(
+          'div',
+          { className: 'col-sm-6 col-md-4', style: { float: 'none', margin: '0 auto' } },
+          props.children
+        )
+      )
+    )
   );
 };
 
@@ -10522,10 +10564,10 @@ var Weather = React.createClass({
     }
     return React.createElement(
       'div',
-      { style: { width: '30em', margin: '0 auto' } },
+      null,
       React.createElement(
         'h1',
-        { style: { textAlign: 'center' } },
+        null,
         'Get Weather'
       ),
       React.createElement('br', null),
