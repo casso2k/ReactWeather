@@ -10570,6 +10570,7 @@ var React = __webpack_require__(5);
 var WeatherForm = __webpack_require__(102);
 var WeatherMessage = __webpack_require__(103);
 var ErrorModal = __webpack_require__(100);
+var queryString = __webpack_require__(233);
 
 var Weather = React.createClass({
   displayName: 'Weather',
@@ -10641,6 +10642,13 @@ var Weather = React.createClass({
         }
       }.bind(this)
     });
+  },
+  componentDidMount: function componentDidMount() {
+    var parsed = queryString.parse(this.props.location.search);
+    var location = parsed.location;
+    if (location && location.length > 0) {
+      this.handleSearch(location);
+    }
   },
   render: function render() {
     var that = this;
@@ -10818,11 +10826,52 @@ var React = __webpack_require__(5);
 var _require = __webpack_require__(36),
     Link = _require.Link;
 
+var ErrorModal = __webpack_require__(100);
+
 var Nav = React.createClass({
   displayName: 'Nav',
 
-  getWeather: function getWeather() {
-    alert(this.refs.location.value);
+  getInitialState: function getInitialState() {
+    return {
+      dataToggle: 'modal',
+      dataTarget: '#error-modal'
+    };
+  },
+  getWeather: function getWeather(e) {
+    e.preventDefault();
+    var location = this.refs.location.value;
+    var encodedLocation = encodeURIComponent(location);
+    if (location.length > 0) {
+      this.refs.location.value = '';
+      window.location.hash = '#/weather?location=' + encodedLocation;
+    }
+  },
+  onChange: function onChange() {
+    var location = this.refs.location.value;
+    var cityData = [];
+    $.ajax({
+      type: 'GET',
+      url: 'http://api.openweathermap.org/data/2.5/find?q=' + location + '&appid=b11232de231d13c63b910315244dabb8&units=metric',
+      dataType: 'json',
+      success: function (data) {
+        cityData = data.list.map(function (city) {
+          if (city.name === location && city.sys.country === 'CA') {
+            return city;
+          }
+        });
+        if (cityData[0] && cityData[0].name.length > 0) {
+          this.setState({
+            dataToggle: null,
+            dataTarget: null
+          });
+        } else {
+          this.setState({
+            dataToggle: 'modal',
+            dataTarget: '#error-modal'
+          });
+        }
+      }.bind(this)
+    });
   },
   render: function render() {
     return React.createElement(
@@ -10878,14 +10927,15 @@ var Nav = React.createClass({
         React.createElement(
           'div',
           { style: { float: 'right', marginTop: '0.5em' } },
-          React.createElement('input', { type: 'text', ref: 'location', placeholder: 'Search weather by city' }),
+          React.createElement('input', { type: 'text', ref: 'location', onKeyUp: this.onChange, placeholder: 'Search weather by city' }),
           '\xA0\xA0',
           React.createElement(
             'button',
-            { className: 'btn btn-warning', onClick: this.getWeather },
+            { type: 'button', className: 'btn btn-warning', onClick: this.getWeather, 'data-toggle': this.state.dataToggle, 'data-target': this.state.dataTarget },
             'Get Weather'
           )
-        )
+        ),
+        React.createElement(ErrorModal, null)
       )
     );
   }
@@ -27856,6 +27906,229 @@ var valueEqual = function valueEqual(a, b) {
 };
 
 exports.default = valueEqual;
+
+/***/ }),
+/* 233 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+var strictUriEncode = __webpack_require__(234);
+var objectAssign = __webpack_require__(4);
+
+function encoderForArrayFormat(opts) {
+	switch (opts.arrayFormat) {
+		case 'index':
+			return function (key, value, index) {
+				return value === null ? [
+					encode(key, opts),
+					'[',
+					index,
+					']'
+				].join('') : [
+					encode(key, opts),
+					'[',
+					encode(index, opts),
+					']=',
+					encode(value, opts)
+				].join('');
+			};
+
+		case 'bracket':
+			return function (key, value) {
+				return value === null ? encode(key, opts) : [
+					encode(key, opts),
+					'[]=',
+					encode(value, opts)
+				].join('');
+			};
+
+		default:
+			return function (key, value) {
+				return value === null ? encode(key, opts) : [
+					encode(key, opts),
+					'=',
+					encode(value, opts)
+				].join('');
+			};
+	}
+}
+
+function parserForArrayFormat(opts) {
+	var result;
+
+	switch (opts.arrayFormat) {
+		case 'index':
+			return function (key, value, accumulator) {
+				result = /\[(\d*)\]$/.exec(key);
+
+				key = key.replace(/\[\d*\]$/, '');
+
+				if (!result) {
+					accumulator[key] = value;
+					return;
+				}
+
+				if (accumulator[key] === undefined) {
+					accumulator[key] = {};
+				}
+
+				accumulator[key][result[1]] = value;
+			};
+
+		case 'bracket':
+			return function (key, value, accumulator) {
+				result = /(\[\])$/.exec(key);
+
+				key = key.replace(/\[\]$/, '');
+
+				if (!result || accumulator[key] === undefined) {
+					accumulator[key] = value;
+					return;
+				}
+
+				accumulator[key] = [].concat(accumulator[key], value);
+			};
+
+		default:
+			return function (key, value, accumulator) {
+				if (accumulator[key] === undefined) {
+					accumulator[key] = value;
+					return;
+				}
+
+				accumulator[key] = [].concat(accumulator[key], value);
+			};
+	}
+}
+
+function encode(value, opts) {
+	if (opts.encode) {
+		return opts.strict ? strictUriEncode(value) : encodeURIComponent(value);
+	}
+
+	return value;
+}
+
+function keysSorter(input) {
+	if (Array.isArray(input)) {
+		return input.sort();
+	} else if (typeof input === 'object') {
+		return keysSorter(Object.keys(input)).sort(function (a, b) {
+			return Number(a) - Number(b);
+		}).map(function (key) {
+			return input[key];
+		});
+	}
+
+	return input;
+}
+
+exports.extract = function (str) {
+	return str.split('?')[1] || '';
+};
+
+exports.parse = function (str, opts) {
+	opts = objectAssign({arrayFormat: 'none'}, opts);
+
+	var formatter = parserForArrayFormat(opts);
+
+	// Create an object with no prototype
+	// https://github.com/sindresorhus/query-string/issues/47
+	var ret = Object.create(null);
+
+	if (typeof str !== 'string') {
+		return ret;
+	}
+
+	str = str.trim().replace(/^(\?|#|&)/, '');
+
+	if (!str) {
+		return ret;
+	}
+
+	str.split('&').forEach(function (param) {
+		var parts = param.replace(/\+/g, ' ').split('=');
+		// Firefox (pre 40) decodes `%3D` to `=`
+		// https://github.com/sindresorhus/query-string/pull/37
+		var key = parts.shift();
+		var val = parts.length > 0 ? parts.join('=') : undefined;
+
+		// missing `=` should be `null`:
+		// http://w3.org/TR/2012/WD-url-20120524/#collect-url-parameters
+		val = val === undefined ? null : decodeURIComponent(val);
+
+		formatter(decodeURIComponent(key), val, ret);
+	});
+
+	return Object.keys(ret).sort().reduce(function (result, key) {
+		var val = ret[key];
+		if (Boolean(val) && typeof val === 'object' && !Array.isArray(val)) {
+			// Sort object keys, not values
+			result[key] = keysSorter(val);
+		} else {
+			result[key] = val;
+		}
+
+		return result;
+	}, Object.create(null));
+};
+
+exports.stringify = function (obj, opts) {
+	var defaults = {
+		encode: true,
+		strict: true,
+		arrayFormat: 'none'
+	};
+
+	opts = objectAssign(defaults, opts);
+
+	var formatter = encoderForArrayFormat(opts);
+
+	return obj ? Object.keys(obj).sort().map(function (key) {
+		var val = obj[key];
+
+		if (val === undefined) {
+			return '';
+		}
+
+		if (val === null) {
+			return encode(key, opts);
+		}
+
+		if (Array.isArray(val)) {
+			var result = [];
+
+			val.slice().forEach(function (val2) {
+				if (val2 === undefined) {
+					return;
+				}
+
+				result.push(formatter(key, val2, result.length));
+			});
+
+			return result.join('&');
+		}
+
+		return encode(key, opts) + '=' + encode(val, opts);
+	}).filter(function (x) {
+		return x.length > 0;
+	}).join('&') : '';
+};
+
+
+/***/ }),
+/* 234 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+module.exports = function (str) {
+	return encodeURIComponent(str).replace(/[!'()*]/g, function (c) {
+		return '%' + c.charCodeAt(0).toString(16).toUpperCase();
+	});
+};
+
 
 /***/ })
 /******/ ]);

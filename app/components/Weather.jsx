@@ -2,6 +2,7 @@ var React = require('react');
 var WeatherForm = require('./WeatherForm.jsx');
 var WeatherMessage = require('./WeatherMessage.jsx');
 var ErrorModal = require('./ErrorModal.jsx');
+const queryString = require('query-string');
 
 var Weather = React.createClass({
   getInitialState: function(){
@@ -71,6 +72,13 @@ var Weather = React.createClass({
         }
       }.bind(this)
     });
+  },
+  componentDidMount: function(){
+    var parsed = queryString.parse(this.props.location.search);
+    var location = parsed.location;
+    if (location && location.length > 0){
+      this.handleSearch(location);
+    }
   },
   render: function(){
     var that = this;
