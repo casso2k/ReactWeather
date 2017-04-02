@@ -17,7 +17,7 @@ var Nav = React.createClass({
             <li><Link to="/about">About</Link></li>
             <li><Link to="/examples">Examples</Link></li>
           </ul>
-          <div style={{float: 'right', marginTop: '0.5em'}}><input type="text" ref='location' />&nbsp;&nbsp;<button className="btn btn-warning" onClick={this.getWeather}>Get Weather</button></div>
+          <div style={{float: 'right', marginTop: '0.5em'}}><input type="text" ref='location' placeholder="Search weather by city" />&nbsp;&nbsp;<button className="btn btn-warning" onClick={this.getWeather}>Get Weather</button></div>
         </div>
       </nav>
     );

@@ -16,7 +16,7 @@ var WeatherForm = React.createClass({
     return (
       <form>
         <div className='form-group'>
-          <input type='text' className='form-control' ref='location' onKeyUp={this.onLocationChange} />
+          <input type='text' className='form-control' ref='location' placeholder="Search weather by city" onKeyUp={this.onLocationChange} />
           <br />
           <button type='button' className='btn btn-info btn-block' onClick={this.onFormSubmit} data-toggle={this.props.dataToggle} data-target={this.props.dataTarget}>Get Weather</button>
         </div>

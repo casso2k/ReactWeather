@@ -4,10 +4,10 @@ var About = (props) => {
   return (
     <div>
       <h1 className="text-center">About</h1>
-      <p className="text-center">
+      <p className="text-center push-down4">
         This is a weather application built on React by Picasso.
       </p>
-      <p>
+      <p className="push-down4">
         Here are some of the tools used:
       </p>
       <ul>
