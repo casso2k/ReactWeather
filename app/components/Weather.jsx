@@ -1,11 +1,14 @@
 var React = require('react');
 var WeatherForm = require('./WeatherForm.jsx');
 var WeatherMessage = require('./WeatherMessage.jsx');
+var ErrorModal = require('./ErrorModal.jsx');
 
 var Weather = React.createClass({
   getInitialState: function(){
     return {
-      isLoading: false
+      isLoading: false,
+      dataToggle: 'modal',
+      dataTarget: '#error-modal'
     };
   },
   handleSearch: function(location){
@@ -30,7 +33,6 @@ var Weather = React.createClass({
             isLoading: false
           });
         } else {
-          alert("No such city");
           this.setState({
             isLoading: false
           });
@@ -41,6 +43,32 @@ var Weather = React.createClass({
         this.setState({
           isLoading: false
         });
+      }.bind(this)
+    });
+  },
+  handleChange: function(location){
+    var cityData = [];
+    $.ajax({
+      type: 'GET',
+      url: 'http://api.openweathermap.org/data/2.5/find?q=' + location + '&appid=b11232de231d13c63b910315244dabb8&units=metric',
+      dataType: 'json',
+      success: function(data){
+        cityData = data.list.map(function(city){
+          if (city.name === location && city.sys.country === 'CA'){
+            return city;
+          }
+        });
+        if (cityData[0] && cityData[0].name.length > 0){
+          this.setState({
+            dataToggle: null,
+            dataTarget: null
+          });
+        } else {
+          this.setState({
+            dataToggle: 'modal',
+            dataTarget: '#error-modal'
+          });
+        }
       }.bind(this)
     });
   },
@@ -59,8 +87,9 @@ var Weather = React.createClass({
         <h1 className='text-center'>Get Weather</h1>
         <br />
         <br />
-        <WeatherForm onSearch={this.handleSearch} />
+        <WeatherForm onSearch={this.handleSearch} onChange={this.handleChange} dataToggle={this.state.dataToggle} dataTarget={this.state.dataTarget} />
         {renderMessage()}
+        <ErrorModal />
       </div>
     );
   }
