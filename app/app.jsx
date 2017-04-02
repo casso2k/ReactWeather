@@ -5,7 +5,7 @@ var Main = require('./components/Main.jsx');
 var Weather = require('./components/Weather.jsx');
 var About = require('./components/About.jsx');
 var Examples = require('./components/Examples.jsx');
-require("./styles/app.css");
+require("./styles/app.scss");
 
 ReactDOM.render(
   <HashRouter>
