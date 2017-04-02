@@ -80,6 +80,13 @@ var Weather = React.createClass({
       this.handleSearch(location);
     }
   },
+  componentWillReceiveProps: function(newProps){
+    var parsed = queryString.parse(newProps.location.search);
+    var location = parsed.location;
+    if (location && location.length > 0){
+      this.handleSearch(location);
+    }
+  },
   render: function(){
     var that = this;
     function renderMessage(){
